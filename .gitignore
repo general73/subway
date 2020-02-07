@@ -3,3 +3,4 @@ public
 .tmp
 .cache
 dist
+package-lock.json

@@ -124,7 +124,6 @@ export default class Net {
     private _parseWayPoints(data: any[]): void {
         for (let i = 0; i < data.length; i += 1) {
             const info = data[i];
-
             if (!this.stations.has(info.id)) {
                 const sx = Net.convert(parseFloat(info.lat)) - 6894;
                 const sy = Net.convert(parseFloat(info.lon)) - 2053;
@@ -213,7 +212,7 @@ export default class Net {
                         );
                         const wpId = `${prevStation.id}-2-${
                             station.id
-                        }-wp-${j}`;
+                            }-wp-${j}`;
                         let wayPoint;
 
                         if (!this._wayPoints.has(wpId)) {

@@ -31,6 +31,7 @@ window.addEventListener("resize", () => {
 document.body.appendChild(renderer.view);
 
 const stage = new PIXI.Container();
+console.log(stage);
 const bg = new PIXI.extras.TilingSprite(
   // PIXI.Texture.fromImage('./img/congruent_outline.png'),
   // PIXI.Texture.fromImage('./img/black_denim.png'),
@@ -52,8 +53,11 @@ stage.interactive = true;
 
 const layers = new PIXI.Graphics();
 
-layers.x = -100;
-layers.y = -300;
+//layers.x = 0;
+//layers.y = -300;
+layers.x = -1564;
+layers.y = -2439;
+
 const layerRailways = new PIXI.Graphics();
 
 layers.scale.set(0.5);
@@ -73,10 +77,45 @@ layers
   .on("pointerupoutside", onDragEnd)
   .on("pointermove", e => {
     if (dragging) {
-      layers.x += e.data.originalEvent.movementX;
-      layers.y += e.data.originalEvent.movementY;
+      let mousedata = e.data.originalEvent as MouseEvent;
+      layers.x += mousedata.movementX;
+      layers.y += mousedata.movementY;
     }
   });
+document.onkeydown = function(e) {
+  if (e.code == "ArrowUp") {
+    layers.y += 20;
+  }
+  if (e.code == "ArrowLeft") {
+    layers.x += 20;
+  }
+  if (e.code == "ArrowDown") {
+    layers.y -= 20;
+  }
+  if (e.code == "ArrowRight") {
+    layers.x -= 20;
+  }
+  if (e.code == "NumpadAdd") {
+    var worldPos = { x: (0 - layers.x) / layers.scale.x, y: (0 - layers.y) / layers.scale.y };
+    var newScale = { x: layers.scale.x * 1.2, y: layers.scale.y * 1.2 };
+    var newScreenPos = { x: (worldPos.x) * newScale.x + layers.x, y: (worldPos.y) * newScale.y + layers.y };
+    layers.x -= (newScreenPos.x - 0);
+    layers.y -= (newScreenPos.y - 0);
+    layers.scale.x = newScale.x;
+    layers.scale.y = newScale.y;
+  }
+  if (e.code == "NumpadSubtract") {
+    let x = 0;
+    let y = 0;
+    var worldPos = { x: (x - layers.x) / layers.scale.x, y: (y - layers.y) / layers.scale.y };
+    var newScale = { x: layers.scale.x * 0.8, y: layers.scale.y * 0.8 };
+    var newScreenPos = { x: (worldPos.x) * newScale.x + layers.x, y: (worldPos.y) * newScale.y + layers.y };
+    layers.x -= (newScreenPos.x - x);
+    layers.y -= (newScreenPos.y - y);
+    layers.scale.x = newScale.x;
+    layers.scale.y = newScale.y;
+  }
+};
 
 // layerRailways.rotation = 5.4;
 stage.addChild(layers);
@@ -119,9 +158,12 @@ const loop = () => {
 const net = new Net();
 
 net.lines.forEach(line => {
-  const rw = new RailWay({ id: line.id, line });
+  const rw = new RailWay({
+    id: line.id,
+    line
+  });
 
-  if (line.id !== "L1" && line.id !== "L5" && line.id !== "L9") {
+  if (line.id !== "L1" /*&& line.id !== "L5" && line.id !== "L9"*/) {
     rw.visible = false;
   }
 
@@ -150,7 +192,10 @@ net.trains.forEach((train: Train) => {
   // }
 });
 
-const settings = new Settings({ net, railways: layerRailways });
+const settings = new Settings({
+  net,
+  railways: layerRailways
+});
 
 stage.addChild(settings);
 
